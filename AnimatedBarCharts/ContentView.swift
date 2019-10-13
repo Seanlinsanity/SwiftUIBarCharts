@@ -8,33 +8,62 @@
 
 import SwiftUI
 
+struct DayDataPoint {
+    let day: String
+    let value: CGFloat
+}
+
 struct ContentView: View {
     @State var pickerSelectedItem = 0
-    @State var dataPoints: [[CGFloat]] = [
-        [0.5, 0.8, 0.2, 0.3, 0.9, 0.1, 0.6],
-        [0.1, 0.7, 0.5, 0.9, 0.1, 1.0, 0.4],
-        [0.6, 0.2, 0.9, 0.3, 0.7, 0.4, 1.0]
+    static let moringDataPoints: [DayDataPoint] = [
+        DayDataPoint(day: "Mon", value: 0.5),
+        DayDataPoint(day: "Tue", value: 0.2),
+        DayDataPoint(day: "Wed", value: 0.1),
+        DayDataPoint(day: "Thu", value: 0.9),
+        DayDataPoint(day: "Fri", value: 0.3),
+        DayDataPoint(day: "Sat", value: 0.8),
+        DayDataPoint(day: "Sun", value: 0.4)
     ]
-    let days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    
+    static let afternoonDataPoints: [DayDataPoint] = [
+        DayDataPoint(day: "Mon", value: 0.3),
+        DayDataPoint(day: "Tue", value: 0.9),
+        DayDataPoint(day: "Wed", value: 0.7),
+        DayDataPoint(day: "Thu", value: 0.2),
+        DayDataPoint(day: "Fri", value: 0.4),
+        DayDataPoint(day: "Sat", value: 0.1),
+        DayDataPoint(day: "Sun", value: 0.6)
+    ]
+    
+    static let eveningDataPoints: [DayDataPoint] = [
+        DayDataPoint(day: "Mon", value: 0.6),
+        DayDataPoint(day: "Tue", value: 0.5),
+        DayDataPoint(day: "Wed", value: 0.3),
+        DayDataPoint(day: "Thu", value: 0.1),
+        DayDataPoint(day: "Fri", value: 0.2),
+        DayDataPoint(day: "Sat", value: 0.75),
+        DayDataPoint(day: "Sun", value: 1.0)
+    ]
+    
+    @State var dataSet = [moringDataPoints, afternoonDataPoints, eveningDataPoints]
     
     var body: some View {
         ZStack {
             Color("appBackgroundColor").edgesIgnoringSafeArea(.all)
             VStack {
                 Text("Calorie Intake")
-                    .font(.system(size: 34))
-                    .fontWeight(.heavy)
-                    .foregroundColor(Color("titleColor"))
+                    .modifier(TitleViewModifier())
+                    
                 Picker(selection: $pickerSelectedItem.animation(.default), label: Text("")) {
-                    Text("Weekday").tag(0)
+                    Text("Morning").tag(0)
                     Text("Afternoon").tag(1)
                     Text("Evening").tag(2)
                 }.pickerStyle(SegmentedPickerStyle())
                     .padding(.horizontal, 24)
                 
                 HStack(spacing: 16) {
-                    ForEach(0..<days.count) { i in
-                        BarView(value: self.dataPoints[self.pickerSelectedItem][i], day: self.days[i])
+                    ForEach(0..<dataSet[pickerSelectedItem].count) { i in
+                        BarView(value: self.dataSet[self.pickerSelectedItem][i].value, day: self.dataSet[self.pickerSelectedItem][i].day)
                     }
                 }.padding(.top, 24)
             }
@@ -57,6 +86,14 @@ struct BarView: View {
             }
             Text(day).padding(.top, 8)
         }
+    }
+}
+
+struct TitleViewModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        return content
+            .font(.system(size: 34, weight: .semibold))
+            .foregroundColor(Color("titleColor"))
     }
 }
 
